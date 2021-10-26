@@ -15,7 +15,7 @@ const db = mysql.createConnection(
 
   db.connect(function(err) {
     if (err) throw err
-    console.log("Connected as Id" + connection.threadId)
+    console.log("Connected as Id" + db.threadId)
     mainMenu();
 });
 
@@ -37,4 +37,35 @@ function mainMenu() {
             ]
         }
     ])
+    .then(function(answers) {
+        switch (answers.options){ 
+            case "View all employees": 
+                viewAllEmployees(); 
+            break;
+
+            case "View all employees by roll": 
+                viewAllRoles(); 
+            break;
+
+            case "View all employees by departement": 
+                viewAllDepartements(); 
+            break;
+
+            case "View all employees by manager": 
+                viewAllByManager(); 
+            break;
+
+            case "Add Employee": 
+                addEmployee(); 
+            break;
+
+            case "Add Role": 
+                addRole(); 
+            break;
+
+            case "Add Departement": 
+                addDepartement(); 
+            break;
+        }
+    })
 }
