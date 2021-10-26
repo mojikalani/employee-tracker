@@ -1,12 +1,7 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table')
-const PORT = process.env.PORT || 3001;
-const app = express();
 
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // Connect to database
 const db = mysql.createConnection(
@@ -18,11 +13,28 @@ const db = mysql.createConnection(
     }
   );
 
-  // Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-  });
-  
-  app.listen(PORT, () => {
-    console.log(`Server listening on  http://localhost${PORT}`);
-  });
+  db.connect(function(err) {
+    if (err) throw err
+    console.log("Connected as Id" + connection.threadId)
+    mainMenu();
+});
+
+//Starting application 
+function mainMenu() { 
+    inquirer.prompt([
+        { 
+            type: "list", 
+            message: "Welcome, select an option: ", 
+            name: "options", 
+            choices: [ 
+                "View all employees", 
+                "View all employees by role", 
+                "View all employees by department", //Extra
+                "View all employees by manager", //Extra
+                "Add employee", 
+                "Add role", 
+                "Add department"
+            ]
+        }
+    ])
+}
