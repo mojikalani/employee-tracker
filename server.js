@@ -9,7 +9,7 @@ const db = mysql.createConnection(
       host: 'localhost',
       user: 'root',
       password: 'password',
-      database: 'employee_tracker_db'
+      database: 'employee_trackerDB'
     }
   );
 
@@ -19,7 +19,7 @@ const db = mysql.createConnection(
     mainMenu();
 });
 
-//Starting application 
+//Main Menu for application
 function mainMenu() { 
     inquirer.prompt([
         { 
@@ -43,12 +43,12 @@ function mainMenu() {
                 viewAllEmployees(); 
             break;
 
-            case "View all employees by roll": 
+            case "View all employees by role": 
                 viewAllRoles(); 
             break;
 
-            case "View all employees by departement": 
-                viewAllDepartements(); 
+            case "View all employees by department": 
+                viewAllDepartments(); 
             break;
 
             case "View all employees by manager": 
@@ -68,4 +68,67 @@ function mainMenu() {
             break;
         }
     })
-}
+};
+
+// Function for showing all employees
+function viewAllEmployees() { 
+    db.query(`
+    SELECT 
+    employee.first_name AS "First Name", 
+    employee.last_name AS "Last Name", 
+    role.title AS Title, 
+    role.salary AS Salary, 
+    department.name AS Department, 
+    CONCAT(m.first_name, ' ' ,m.last_name) AS Manager 
+    FROM employee 
+    INNER JOIN role on role.id = employee.role_id 
+    INNER JOIN department on department.id = role.department_id 
+    left join employee m on employee.manager_id = m.id;
+    `, 
+    function(err, res) { 
+        if (err) { 
+            throw (err)
+        }
+        console.table(res)
+        mainMenu();
+    })
+};
+
+// Function for showing all employee roles
+function viewAllRoles() {
+    db.query(`
+    SELECT 
+    employee.first_name AS "First Name", 
+    employee.last_name AS "Last Name", 
+    role.title AS Title 
+    FROM employee 
+    JOIN role ON employee.role_id = role.id;
+    `, 
+    function(err, res) { 
+        if (err) { 
+            throw (err)
+        }
+        console.table(res)
+        mainMenu();
+    })
+};
+
+function viewAllDepartments() {
+    db.query(`
+    SELECT 
+    employee.first_name AS "First Name",
+    employee.last_name AS "Last Name", 
+    department.name AS Department 
+    FROM employee 
+    JOIN role ON employee.role_id = role.id 
+    JOIN department ON role.department_id = department.id 
+    ORDER BY employee.id;
+    `, 
+    function(err, res) { 
+        if (err) { 
+            throw (err)
+        }
+        console.table(res)
+        mainMenu();
+    })
+};
