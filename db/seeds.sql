@@ -9,21 +9,23 @@ VALUES
 -- EMPLOYEE ROLE SEEDS -------
 INSERT INTO role (title, salary, department_id)
 VALUES 
-("Lead Engineer", 150000, 2),
-("Legal Team Lead", 250000, 4),
-("Accountant", 125000, 3),
 ("Sales Lead", 100000, 1),
 ("Salesperson", 80000, 1),
+("Lead Engineer", 150000, 2),
 ("Software Engineer", 120000, 2),
+("Accountant", 125000, 3),
+("Account Manager", 160000, 3),
+("Legal Team Lead", 250000, 4),
 ("Lawyer", 190000, 4);
 
 -- EMPLOYEE SEEDS -------
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
 VALUES 
-("Jessica", "Haze", null, 1),
-("Tiffany", "Patric", null, 2),
-("Mia","Lam",null,3),
-("Bently", "Lao", 1, 4),
-("Chris", "Melby", 4, 5),
-("Jason", "Baker", 1, 6),
-("Tom", "Nice", 2, 7);
+("Mikey", "Chan", null, 1),
+("Ashley", "Rodriguez", null, 2),
+("Kevin","Tupik",null,3),
+("Kuunal", "Singh", 1, 4),
+("Malia", "Brown", 4, 5),
+("Sarah", "Lourd", 1, 6),
+("Tom", "Bihn", 2, 7),
+("Barry", "Allen", null, 8);
