@@ -84,6 +84,7 @@ function mainMenu() {
 function viewAllEmployees() { 
     db.query(`
     SELECT 
+    employee.id AS Id,
     employee.first_name AS "First Name", 
     employee.last_name AS "Last Name", 
     role.title AS Title, 
@@ -108,6 +109,7 @@ function viewAllEmployees() {
 function viewAllERoles() {
     db.query(`
     SELECT 
+    employee.id AS Id,
     employee.first_name AS "First Name", 
     employee.last_name AS "Last Name", 
     role.title AS Title 
@@ -127,6 +129,7 @@ function viewAllERoles() {
 function viewAllEDepartments() {
     db.query(`
     SELECT 
+    employee.id AS Id,
     employee.first_name AS "First Name",
     employee.last_name AS "Last Name", 
     department.name AS Department 
@@ -186,6 +189,11 @@ function addEmployee() {
           message: "Enter their last name "
         },
         {
+            name: "id",
+            type: "input",
+            message: "Enter their Id "
+          },
+        {
           name: "role",
           type: "list",
           message: "What is their role? ",
@@ -202,6 +210,7 @@ function addEmployee() {
       const managerId = selectManager().indexOf(answers.choice) + 1
       db.query("INSERT INTO employee SET ?", 
       {
+          id: answers.Id, 
           first_name: answers.first_name,
           last_name: answers.last_name,
           manager_id: managerId,

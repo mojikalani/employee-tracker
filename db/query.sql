@@ -1,5 +1,6 @@
 -- Query for viewing all employees -- 
 SELECT 
+employee.id AS Id,
 employee.first_name AS "First Name", 
 employee.last_name AS "Last Name", 
 role.title AS Title, 
@@ -13,6 +14,7 @@ left join employee m on employee.manager_id = m.id;
 
 -- Query for Viewing all roles -- 
 SELECT 
+employee.id AS Id,
 employee.first_name AS "First Name", 
 employee.last_name AS "Last Name", 
 role.title AS Title 
@@ -21,6 +23,7 @@ JOIN role ON employee.role_id = role.id;
 
 -- Query for Viewing all Departments -- 
 SELECT 
+employee.id AS Id,
 employee.first_name AS "First Name",
 employee.last_name AS "Last Name", 
 department.name AS Department 
