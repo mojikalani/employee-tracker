@@ -1,8 +1,5 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const consoleTable = require('console.table')
-
-
 // Connect to database
 const db = mysql.createConnection(
     {
@@ -14,8 +11,10 @@ const db = mysql.createConnection(
   );
 
   db.connect(function(err) {
-    if (err) throw err
-    console.log("Connected as Id" + db.threadId)
+    if (err) { 
+        throw (err)
+    }
+    console.log("\n Welcome to the Employee Tracker Application!\n")
     mainMenu();
 });
 
@@ -24,19 +23,22 @@ function mainMenu() {
     inquirer.prompt([
         { 
             type: "list", 
-            message: "Welcome, select an option: ", 
+            message: "Select an option: ", 
             name: "options", 
             choices: [ 
                 "View all employees", 
                 "View all employees by role", 
-                "View all employees by department", //Extra
-                "View all employees by manager", //Extra
+                "View all employees by department", 
                 "Add employee", 
+                "View roles",
                 "Add role", 
-                "Add department"
+                "View departments",
+                "Add department", 
+                "Exit"
             ]
         }
     ])
+
     .then(function(answers) {
         switch (answers.options){ 
             case "View all employees": 
@@ -44,27 +46,35 @@ function mainMenu() {
             break;
 
             case "View all employees by role": 
-                viewAllRoles(); 
+                viewAllERoles(); 
             break;
 
             case "View all employees by department": 
-                viewAllDepartments(); 
+                viewAllEDepartments(); 
             break;
 
-            case "View all employees by manager": 
-                viewAllByManager(); 
-            break;
-
-            case "Add Employee": 
+            case "Add employee": 
                 addEmployee(); 
             break;
 
-            case "Add Role": 
+            case "View roles": 
+                viewRoles(); 
+            break; 
+
+            case "Add role": 
                 addRole(); 
             break;
+            
+            case "View departments": 
+                viewDepartments();
+            break;
 
-            case "Add Departement": 
-                addDepartement(); 
+            case "Add department": 
+                addDepartment(); 
+            break;
+
+            case "Exit":  
+                exitApp();
             break;
         }
     })
@@ -94,8 +104,8 @@ function viewAllEmployees() {
     })
 };
 
-// Function for showing all employee roles
-function viewAllRoles() {
+// Function for showing all Employee roles
+function viewAllERoles() {
     db.query(`
     SELECT 
     employee.first_name AS "First Name", 
@@ -113,7 +123,8 @@ function viewAllRoles() {
     })
 };
 
-function viewAllDepartments() {
+// Function for showing all Employee departments
+function viewAllEDepartments() {
     db.query(`
     SELECT 
     employee.first_name AS "First Name",
@@ -132,3 +143,172 @@ function viewAllDepartments() {
         mainMenu();
     })
 };
+
+
+// Function for adding employee
+function addEmployee() { 
+    var managersArr = [];
+    var roleArr = [];
+    
+    //Function for holding managers
+    function selectManager() {
+      db.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function(err, res) {
+        if (err) throw err
+        for (var i = 0; i < res.length; i++) {
+          managersArr.push(res[i].first_name);
+        }
+    
+      })
+      return managersArr;
+    };
+
+    // Function for holding roles
+    function selectRole() {
+    db.query("SELECT * FROM role", function(err, res) {
+    if (err) throw err
+    for (var i = 0; i < res.length; i++) {
+      roleArr.push(res[i].title);
+        }
+        })
+    return roleArr;
+    };
+
+
+    inquirer.prompt([
+        {
+          name: "first_name",
+          type: "input",
+          message: "Enter their first name "
+        },
+        {
+          name: "last_name",
+          type: "input",
+          message: "Enter their last name "
+        },
+        {
+          name: "role",
+          type: "list",
+          message: "What is their role? ",
+          choices: selectRole()
+        },
+        {
+            name: "choice",
+            type: "list",
+            message: "Whats their managers name?",
+            choices: selectManager()
+        }
+    ]).then(function (answers) {
+      const roleId = selectRole().indexOf(answers.role) + 1
+      const managerId = selectManager().indexOf(answers.choice) + 1
+      db.query("INSERT INTO employee SET ?", 
+      {
+          first_name: answers.first_name,
+          last_name: answers.last_name,
+          manager_id: managerId,
+          role_id: roleId
+      
+      }, function(err){
+          if (err) throw err
+          console.table(answers)
+          mainMenu()
+      })
+
+  })
+}
+
+// Functions for viewing and adding roles 
+function viewRoles() { 
+    db.query(`SELECT * FROM role;`, 
+    function (err, res) { 
+        if (err) { 
+            throw (err)
+        }
+        console.table(res); 
+        mainMenu();
+    })
+};
+
+function addRole() { 
+  db.query("SELECT role.title AS Title, role.salary AS Salary, role.department_id AS Department FROM role",   
+  function(err, res) {
+      if (err) { 
+          throw(err);
+      };
+
+    inquirer.prompt([
+        {
+          name: "Title",
+          type: "input",
+          message: "What is the role title?"
+        },
+        {
+          name: "Salary",
+          type: "input",
+          message: "What is the salary?"
+        }, 
+        {
+            name: "Department",
+            type: "input",
+            message: "What is the Department Id?"
+  
+          } 
+        
+    ]).then(function(answers) {
+        db.query(
+            "INSERT INTO role SET ?",
+            {
+              title: answers.Title,
+              salary: answers.Salary,
+              department_id: answers.Department,
+            },
+            function(err) {
+                if (err) throw err
+                console.table(res);
+                mainMenu();
+            }
+        )
+
+    });
+  });
+  }
+
+  // Functions for viewing and adding departments
+function viewDepartments() { 
+    db.query(`SELECT * FROM department;`, 
+    function (err, res) { 
+        if (err) { 
+            throw (err)
+        }
+        console.table(res); 
+        mainMenu();
+    })
+};
+
+function addDepartment() { 
+    inquirer.prompt([
+        {
+          name: "name",
+          type: "input",
+          message: "What Department would you like to add?"
+        }
+    ]).then(function(res) {
+        db.query(
+            "INSERT INTO department SET ? ",
+            {
+              name: res.name
+            
+            },
+            function(err) {
+                if (err) throw err
+                console.table(res);
+                mainMenu();
+            }
+        )
+    })
+  }
+
+
+  function exitApp() {
+      db.end();
+      console.log("\nGood Bye!");
+  }
