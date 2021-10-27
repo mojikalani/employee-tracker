@@ -150,14 +150,14 @@ function viewAllEDepartments() {
 
 // Function for adding employee
 function addEmployee() { 
-    var managersArr = [];
-    var roleArr = [];
+    const managersArr = [];
+    const roleArr = [];
     
     //Function for holding managers
     function selectManager() {
       db.query("SELECT first_name, last_name FROM employee WHERE manager_id IS NULL", function(err, res) {
         if (err) throw err
-        for (var i = 0; i < res.length; i++) {
+        for (let i = 0; i < res.length; i++) {
           managersArr.push(res[i].first_name);
         }
     
@@ -168,8 +168,10 @@ function addEmployee() {
     // Function for holding roles
     function selectRole() {
     db.query("SELECT * FROM role", function(err, res) {
-    if (err) throw err
-    for (var i = 0; i < res.length; i++) {
+    if (err) { 
+        throw (err)
+    }
+    for (let i = 0; i < res.length; i++) {
       roleArr.push(res[i].title);
         }
         })
@@ -217,7 +219,9 @@ function addEmployee() {
           role_id: roleId
       
       }, function(err){
-          if (err) throw err
+          if (err) { 
+              throw (err)
+          }
           console.table(answers)
           mainMenu()
       })
